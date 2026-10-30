@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مَكْتَبَةُ اليَاسَمِينِ الأَدَبِيَّةِ لِلنَّاشِئَةِ 📚✨</title>
+    
+    <!-- مكتبات Firebase السحابية -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+        :root {
+            --primary: #4338ca;
+            --primary-light: #6366f1;
+            --accent: #f59e0b;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 30px 20px;
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            padding: 40px 30px;
+            border-radius: 30px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-top: 8px solid var(--accent);
+        }
+
+        .modal-card h2 {
+            color: var(--primary);
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        .role-selection {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn-role {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid var(--primary);
+            border-radius: 18px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-role:hover, .btn-role.active {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 56, 202, 0.2);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #475569;
+            font-size: 1.05rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, #4338ca 0%, #3b82f6 100%);
+            color: white;
+            padding: 35px 25px;
+            border-radius: 30px;
+            box-shadow: 0 15px 30px rgba(67, 56, 202, 0.2);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 900;
+        }
+
+        .student-welcome-tag {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-size: 1.15rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+            margin-bottom: 30px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .rewards-section {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 2px dashed #f59e0b;
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .badges-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .badge-card {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 20px;
+            border: 2px solid #fde68a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0.35;
+            filter: grayscale(100%);
+            transition: all 0.4s;
+        }
+
+        .badge-card.unlocked {
+            opacity: 1;
+            filter: grayscale(0%);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .badge-card .icon {
+            font-size: 2.2rem;
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 50px;
+            height: 16px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 2px solid #cbd5e1;
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            height: 100%;
+            width: 0%;
+            transition: width 0.6s ease;
+            border-radius: 50px;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .story-btn {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .story-btn:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-light);
+            background: #f8fafc;
+            box-shadow: 0 12px 20px -3px rgba(67, 56, 202, 0.1);
+        }
+
+        .story-btn .icon {
+            font-size: 3.2rem;
+            margin-bottom: 12px;
+        }
+
+        .story-btn h3 {
+            margin: 0 0 10px 0;
+            color: #334155;
+            font-size: 1.15rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .badge-read { background-color: #d1fae5; color: #065f46; }
+        .badge-unread { background-color: #fef3c7; color: #92400e; }
+
+        .hidden { display: none; }
+
+        .story-title {
+            color: var(--primary);
+            font-size: 2rem;
+            text-align: center;
+            margin-top: 0;
+            font-weight: 900;
+        }
+
+        .story-text {
+            font-size: 1.5rem;
+            line-height: 2.5;
+            color: #334155;
+            background: #fffbeb;
+            padding: 30px;
+            border-radius: 24px;
+            border-right: 6px solid var(--accent);
+            margin: 25px 0;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-audio { background: #8b5cf6; color: white; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3); }
+        .btn-audio:hover { background: #7c3aed; }
+
+        .btn-back { background: #64748b; color: white; }
+        .btn-back:hover { background: #475569; }
+
+        .btn-submit { background: #059669; color: white; width: 100%; justify-content: center; font-size: 1.25rem; margin-top: 25px; }
+        .btn-submit:hover { background: #047857; }
+
+        .question-box {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary-light);
+            background: #f0fdf4;
+            transform: translateX(-4px);
+        }
+
+        .option-label input {
+            margin-left: 15px;
+            transform: scale(1.3);
+            accent-color: var(--primary);
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .report-table th, .report-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .report-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .result-screen { text-align: center; padding: 30px; }
+        .result-screen .emoji { font-size: 6rem; margin-bottom: 15px; }
+        
+        .switch-role-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .switch-role-btn:hover { background: rgba(255, 255, 255, 0.3); }
+    </style>
+</head>
+<body>
+
+    <!-- نافذة اختيار الدخول (طالب أم معلم) -->
+    <div id="roleModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>مَرْحَباً بِكَ فِي مَكْتَبَةِ اليَاسَمِينِ 🌟</h2>
+            <p style="color: #64748b; margin-bottom: 25px; font-size: 1.1rem;">اخْتَرْ صفَتَكَ لِمتابَعَةِ الرِّحْلَةِ:</p>
+            
+            <div class="role-selection">
+                <button class="btn-role" onclick="selectRole('student')">👨‍🎓 طَالِبٌ</button>
+                <button class="btn-role" onclick="selectRole('teacher')">👨‍🏫 مُعَلِّمٌ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الطالب -->
+    <div id="studentModal" class="modal-overlay hidden">
+        <div id="studentModalContent" class="modal-card">
+            <h2>تَسْجِيلُ دُخُولِ الطَّالِبِ 🎒</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">أُكْتُبِ اسْمَكَ وَصَفَكَ لِيُبْعَثَ طَلَبُكَ لِلمُعَلِّمِ سَحَابِيّاً:</p>
+            
+            <div class="input-group">
+                <label for="studentNameInput">اسْمُ الطَّالِبِ الكَرِيمِ:</label>
+                <input type="text" id="studentNameInput" placeholder="مثال: سيف أحمد" required>
+            </div>
+
+            <div class="input-group">
+                <label for="studentClassInput">الصَّفُّ وَالشُّعْبَةُ:</label>
+                <input type="text" id="studentClassInput" placeholder="مثال: الأول / (3)" required>
+            </div>
+
+            <button class="btn btn-submit" onclick="submitStudentRegistration()" style="margin-top: 10px;">إِرْسَالُ طَلَبِ الانْضِمَامِ 🚀</button>
+            <button class="btn btn-back" style="width:100%; justify-content:center; margin-top:10px;" onclick="resetToRoleSelection()">⬅️ رُجُوعٌ</button>
+        </div>
+    </div>
+
+    <!-- نافذة دخول المعلم بكلمة المرور -->
+    <div id="teacherLoginModal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2>دُخُولُ لَوْحَةِ المُعَلِّمِ 🔑</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">الرَّجَاءُ إِدْخَالُ كَلِمَةِ مُرُورِ المُعَلِّمِ:</p>
+            
+            <div class="input-group">
+                <label for="teacherPasswordInput">كَلِمَةُ المُرُورِ:</label>
+                <input type="password" id="teacherPasswordInput" placeholder="أدخل كلمة المرور" required>
+            </div>
+
+            <button class="btn btn-submit" onclick="verifyTeacherPassword()" style="margin-top: 10px;">دُخُولُ اللَّوْحَةِ ✅</button>
+            <button class="btn btn-back" style="width:100%; justify-content:center; margin-top:10px;" onclick="resetToRoleSelection()">⬅️ رُجُوعٌ</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- الترويسة -->
+        <header>
+            <h1>مَكْتَبَةُ اليَاسَمِينِ الأَدَبِيَّةِ 📖</h1>
+            <div id="welcomeTag" class="student-welcome-tag">أهلاً بك في عالم الحكايات الجميلة</div>
+            <div>
+                <button class="switch-role-btn" onclick="resetToRoleSelection()">🔄 تَغْيِيرُ الصِّفَةِ (طَالِب / مُعَلِّم)</button>
+            </div>
+        </header>
+
+        <!-- لوحة الأوسمة والتقدم -->
+        <div class="rewards-section">
+            <h3 style="margin: 0; color: #b45309; font-size: 1.4rem;">🏆 لَوْحَةُ الأَوْسِمَةِ وَالأَمْجَادِ (30 قِصَّةً فَرِيدَةً)</h3>
+            <p id="progressText" style="margin: 8px 0; font-weight: 700; color: #78350f; font-size: 1.1rem;">أَكْمَلْتَ 0 مِنْ 30 قِصَّةً</p>
+            <div class="progress-bar-bg">
+                <div id="progressBar" class="progress-bar-fill"></div>
+            </div>
+
+            <div class="badges-grid">
+                <div id="badge1" class="badge-card">
+                    <span class="icon">🥉</span>
+                    <div style="text-align: right;"><strong>قَارِئٌ مُبْتَدِئٌ</strong><br><small>10 قِصَصٍ</small></div>
+                </div>
+                <div id="badge2" class="badge-card">
+                    <span class="icon">🥈</span>
+                    <div style="text-align: right;"><strong>قَارِئٌ نَشِيطٌ</strong><br><small>20 قِصَّةً</small></div>
+                </div>
+                <div id="badge3" class="badge-card">
+                    <span class="icon">👑</span>
+                    <div style="text-align: right;"><strong>أَمِيرُ البَيَانِ</strong><br><small>30 قِصَّةً</small></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- شبكة عرض القصص الرئيسية للطالب -->
+        <div id="homeView" class="card">
+            <h2 style="text-align: center; color: var(--primary); margin-bottom: 25px;">اخْتَرْ قِصَّةً لِتَغُوصَ فِي بَحْرِ مَعَانِيهَا:</h2>
+            <div class="story-grid" id="storiesContainer"></div>
+        </div>
+
+        <!-- شاشة قراءة القصة والأسئلة -->
+        <div id="storyView" class="card hidden">
+            <button class="btn btn-back" onclick="showHome()">⬅️ العَوْدَةُ لِقَائِمَةِ الحِكَايَاتِ</button>
+            <h2 id="storyTitle" class="story-title"></h2>
+            
+            <div class="controls">
+                <button class="btn btn-audio" onclick="toggleAudio()">🔊 <span id="audioBtnText">اسْتَمِعْ لِلسَّرْدِ الصَّوْتِيِّ</span></button>
+            </div>
+
+            <div id="storyText" class="story-text"></div>
+
+            <hr style="border: 0; height: 2px; background: #e2e8f0; margin: 35px 0;">
+
+            <h3 style="color: var(--primary); font-size: 1.5rem; text-align: center; margin-bottom: 25px;">❓ أَسْئِلَةُ الفَهْمِ وَالاسْتِيعَابِ الثَّلَاثَةُ</h3>
+            <form id="quizForm">
+                <div id="questionsContainer"></div>
+                <button type="button" class="btn btn-submit" onclick="submitQuiz()">تَسْلِيمُ الإِجَابَاتِ وَحِفْظُ الإِنْجَازِ ⭐</button>
+            </form>
+        </div>
+
+        <!-- شاشة النتيجة -->
+        <div id="resultView" class="card hidden result-screen">
+            <div class="emoji" id="resultEmoji">🎉</div>
+            <h2 id="resultTitle" style="color: var(--primary); font-size: 2.2rem;">أَبْدَعْتَ أَيُّهَا البَطَلُ!</h2>
+            <p id="resultText" style="font-size: 1.35rem; color: #475569; line-height: 1.8;"></p>
+            <button class="btn btn-submit" style="max-width: 280px; margin: 30px auto 0 auto;" onclick="showHome()">العودة للمكتبة الرئيسية 🏠</button>
+        </div>
+
+        <!-- لوحة المعلم -->
+        <div id="teacherDashboard" class="card hidden" style="border-color: var(--primary); background: #faf5ff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e9d5ff; padding-bottom: 15px; margin-bottom: 20px;">
+                <h3 style="margin:0; color: var(--primary); font-size: 1.4rem;">📊 لَوْحَةُ مُتَابَعَةِ المُعَلِّمِ الرَّسْمِيَّةُ (سَحَابِيٌّ لَحْظِيٌّ)</h3>
+                <button class="btn btn-back" style="padding: 6px 14px; font-size: 0.95rem;" onclick="resetToRoleSelection()">تسجيل خروج المعلم ✖</button>
+            </div>
+
+            <h4 style="color: #1e293b; margin-bottom: 10px;">👤 إِجْمَالِي إِنْجَازِ الطُّلَّابِ:</h4>
+            <table class="report-table" style="margin-bottom: 30px;">
+                <thead>
+                    <tr>
+                        <th>اسْمُ الطَّالِبِ</th>
+                        <th>الصَّفُّ وَالشُّعْبَةُ</th>
+                        <th>حَالَةُ الانْضِمَامِ / الإِنْجَازِ</th>
+                        <th>الإِجْرَاءُ وَالتَّفَاصِيل</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody"></tbody>
+            </table>
+
+            <div id="studentDetailView" class="hidden" style="background: white; padding: 20px; border-radius: 18px; border: 2px solid var(--primary-light);">
+                <h4 id="detailStudentTitle" style="color: var(--primary); margin-top: 0; font-size: 1.2rem;"></h4>
+                <div style="overflow-x: auto; max-height: 400px;">
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>رَقْم وَعُنْوَانُ الحِكَايَةِ</th>
+                                <th>حَالَةُ القِرَاءَةِ</th>
+                                <th>الدَّرَجَةُ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailTableBody"></tbody>
+                    </table>
+                </div>
+                <button class="btn btn-back" style="margin-top: 15px; font-size: 0.95rem; padding: 8px 16px;" onclick="backToAllStudents()">⬅️ العَوْدَةُ لِقَائِمَةِ الطُّلَّابِ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBG2zCiyPVj6aYQqoA8M62v4lqNOVhX_Ro",
+            authDomain: "mystory-17619.firebaseapp.com",
+            databaseURL: "https://mystory-17619-default-rtdb.firebaseio.com",
+            projectId: "mystory-17619",
+            storageBucket: "mystory-17619.firebasestorage.app",
+            messagingSenderId: "516573289523",
+            appId: "1:516573289523:web:a3c325d5a2a8e0b321d746",
+            measurementId: "G-G32MTENVP0"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 30 قصة قصيرة جداً ومناسبة للصف الأول ومع كل قصة 3 أسئلة فقط
+        const stories = [
+            { id: 's1', icon: '🐱', title: '1. القِطُّ كُوكُو', text: 'كُوكُو قِطٌّ صَغِيرٌ مِشْمِشِيٌّ. يُحِبُّ اللَّعِبَ بِالكُرَةِ الحَمْرَاءِ. شَرِبَ الحَلِيبَ ثُمَّ نَامَ.', questions: [
+                { q: 'مَا لَوْنُ كُوكُو؟', options: ['أسود', 'مشمشي', 'أبيض'], answer: 1 },
+                { q: 'بِمَاذَا يَلْعَبُ كُوكُو؟', options: ['بالكرة الحمراء', 'بالسيارة', 'بالورقة'], answer: 0 },
+                { q: 'مَاذَا شَرِبَ كُوكُو؟', options: ['ماء', 'عصير', 'حليب'], answer: 2 }
+            ]},
+            { id: 's2', icon: '🍎', title: '2. التُّفَّاحَةُ الحَمْرَاءُ', text: 'ذَهَبَ أَحْمَدُ إِلَى البُسْتَانِ. قَطَفَ تُفَّاحَةً حَمْرَاءَ. غَسَلَهَا بِالمَاءِ وَأَكَلَهَا.', questions: [
+                { q: 'أَيْنَ ذَهَبَ أَحْمَدُ؟', options: ['إلى السوق', 'إلى البستان', 'إلى البحر'], answer: 1 },
+                { q: 'مَاذَا قَطَفَ أَحْمَدُ؟', options: ['تُفَّاحَةً', 'مَوْزَةً', 'تَمْرَةً'], answer: 0 },
+                { q: 'مَاذَا فَعَلَ قَبْلَ أَنْ يَأْكُلَهَا؟', options: ['قطعها', 'غَسَلَهَا بِالمَاءِ', 'رماها'], answer: 1 }
+            ]},
+            { id: 's3', icon: '🐦', title: '3. العُصْفُورُ الشَّجَاعُ', text: 'وَقَفَ عُصْفُورٌ عَلَى الشَّجَرَةِ. فَتَحَ جَنَاحَيْهِ وَطَارَ فِي السَّمَاءِ بِفَرَحٍ.', questions: [
+                { q: 'أَيْنَ وَقَفَ العُصْفُورُ؟', options: ['على الشجرة', 'على الأرض', 'في البيت'], answer: 0 },
+                { q: 'مَاذَا فَتَحَ العُصْفُورُ؟', options: ['فمه', 'جَنَاحَيْهِ', 'عينيه'], answer: 1 },
+                { q: 'أَيْنَ طَارَ العُصْفُورُ؟', options: ['في البحر', 'في الغرفة', 'فِي السَّمَاءِ'], answer: 2 }
+            ]},
+            { id: 's4', icon: '🐝', title: '4. النَّحْلَةُ نَشِيطَةٌ', text: 'النَّحْلَةُ تَطِيرُ بَيْنَ الأَزْهَارِ. تَجْمَعُ الرَّحِيقَ لِتَصْنَعَ العَسَلَ اللَّذِيذَ.', questions: [
+                { q: 'أَيْنَ تَطِيرُ النَّحْلَةُ؟', options: ['بين الأشجار', 'بَيْنَ الأَزْهَارِ', 'فوق الماء'], answer: 1 },
+                { q: 'مَاذَا تَجْمَعُ النَّحْلَةُ؟', options: ['الرَّحِيقَ', 'الورق', 'التراب'], answer: 0 },
+                { q: 'مَاذَا تَصْنَعُ النَّحْلَةُ؟', options: ['العصير', 'العَسَلَ', 'الحليب'], answer: 1 }
+            ]},
+            { id: 's5', icon: '🐰', title: '5. الأَرْنَبُ سِمْسِمٌ', text: 'سِمْسِمٌ أَرْنَبٌ أَبْيَضُ. يَقْفِزُ بَيْنَ الأَعْشَابِ. يَأْكُلُ الجَزَرَ الطَّازَجَ.', questions: [
+                { q: 'مَا لَوْنُ الأَرْنَبِ؟', options: ['أَسْوَدُ', 'أَبْيَضُ', 'بُنِّيٌّ'], answer: 1 },
+                { q: 'كَيْفَ يَتَحَرَّكُ سِمْسِمٌ؟', options: ['يمشي', 'يسبح', 'يَقْفِزُ'], answer: 2 },
+                { q: 'مَاذَا يَأْكُلُ سِمْسِمٌ؟', options: ['الجَزَرَ', 'الخُبْزَ', 'التُّفَّاحَ'], answer: 0 }
+            ]},
+            { id: 's6', icon: '🐟', title: '6. السَّمَكَةُ الذَّهَبِيَّةُ', text: 'سَمُورَةُ سَمَكَةٌ صَغِيرَةٌ. تَسْبَحُ فِي البَحْرِ الأزْرَقِ بَيْنَ المَرْجَانِ.', questions: [
+                { q: 'مَا اسْمُ السَّمَكَةِ؟', options: ['سمورة', 'كوكو', 'سارة'], answer: 0 },
+                { q: 'أَيْنَ تَسْبَحُ سَمُورَةُ؟', options: ['في النهر', 'فِي البَحْرِ', 'في البركة'], answer: 1 },
+                { q: 'مَا لَوْنُ البَحْرِ؟', options: ['أخضر', 'أحمر', 'أَزْرَقُ'], answer: 2 }
+            ]},
+            { id: 's7', icon: '🚀', title: '7. الصَّارُوخُ الصَّغِيرُ', text: 'لَدَى سَالِمٍ صَارُوقٌ لَعَبَةٌ. لَوْنُهُ أَحْمَرُ وَأَبْيَضُ. يَلْعَبُ بِهِ فِي غُرْفَتِهِ.', questions: [
+                { q: 'مَاذَا يَمْلِكُ سَالِمٌ؟', options: ['سيارة', 'صَارُوحاً لُعْبَةً', 'طيارة'], answer: 1 },
+                { q: 'مَا أَلْوَانُ الصَّارُوحِ؟', options: ['أَحْمَرُ وَأَبْيَضُ', 'أصفر وأسود', 'أزرق وأخضر'], answer: 0 },
+                { q: 'أَيْنَ يَلْعَبُ سَالِمٌ؟', options: ['في الشارع', 'فِي غُرْفَتِهِ', 'في المطبخ'], answer: 1 }
+            ]},
+            { id: 's8', icon: '🌱', title: '8. بَذْرَةُ نُورَةَ', text: 'غَرَسَتْ نُورَةُ بَذْرَةً فِي التُّرَابِ. سَقَتْهَا المَاءَ كُلَّ يَوْمٍ. كَبُرَتِ النَّبْتَةُ.', questions: [
+                { q: 'مَاذَا غَرَسَتْ نُورَةُ؟', options: ['شجرة', 'بَذْرَةً', 'وردة'], answer: 1 },
+                { q: 'بِمَاذَا سَقَتْهَا نُورَةُ؟', options: ['بِالمَاءِ', 'بالحليب', 'بالعصير'], answer: 0 },
+                { q: 'مَاذَا حَدَثَ لِلنَّبْتَةِ؟', options: ['ذبلت', 'كَبُرَتْ', 'صغرت'], answer: 1 }
+            ]},
+            { id: 's9', icon: '🐕', title: '9. الكَلْبُ بُوبِي', text: 'بُوبِي كَلْبٌ أَمِينٌ. يَحْرُسُ المَنْزِلَ فِي اللَّيْلِ. يُحِبُّ اللَّعِبَ فِي الحَدِيقَةِ.', questions: [
+                { q: 'مَا اسْمُ الكَلْبِ؟', options: ['بوبي', 'روكي', 'مكس'], answer: 0 },
+                { q: 'مَاذَا يَحْرُسُ بُوبِي؟', options: ['المدرسة', 'المَنْزِلَ', 'المتجر'], answer: 1 },
+                { q: 'مَتَى يَحْرُسُ المَنْزِلَ؟', options: ['في النهار', 'فِي اللَّيْلِ', 'في الظهر'], answer: 1 }
+            ]},
+            { id: 's10', icon: '📚', title: '10. دَفْتَرُ فَاطِمَةَ', text: 'فَاطِمَةُ تِلْمِيذَةٌ نَشِيطَةٌ. تَكْتُبُ الحُرُوفَ فِي الدَّفْتَرِ. خَطُّهَا جَمِيلٌ وَمُنَظَّمٌ.', questions: [
+                { q: 'مَا اسْمُ التِّلْمِيذَةِ؟', options: ['نورة', 'فَاطِمَةُ', 'سارة'], answer: 1 },
+                { q: 'مَاذَا تَكْتُبُ فَاطِمَةُ؟', options: ['الأرقام', 'الحُرُوفَ', 'الصور'], answer: 1 },
+                { q: 'كَيْفَ كَانَ خَطُّهَا؟', options: ['صغير', 'جَمِيلٌ وَمُنَظَّمٌ', 'غير واضح'], answer: 1 }
+            ]},
+            { id: 's11', icon: '☀️', title: '11. الصَّبَاحُ الجَمِيلُ', text: 'أَشْرَقَتِ الشَّمْسُ صَبَاحاً. اسْتَيْقَظَ طَارِقٌ نَشِيطاً. ارْتَدَى مَلَابِسَ المَدْرَسَةِ.', questions: [
+                { q: 'مَاذَا أَشْرَقَتْ صَبَاحاً؟', options: ['الشَّمْسُ', 'القمر', 'النجمة'], answer: 0 },
+                { q: 'مَنْ اسْتَيْقَظَ نَشِيطاً؟', options: ['سالم', 'طَارِقٌ', 'أحمد'], answer: 1 },
+                { q: 'مَاذَا ارْتَدَى طَارِقٌ؟', options: ['ملابس النوم', 'مَلَابِسَ المَدْرَسَةِ', 'ملابس الرياضة'], answer: 1 }
+            ]},
+            { id: 's12', icon: '⚽', title: '12. كُرَةُ فَيْصَلَ', text: 'فَيْصَلُ يُحِبُّ كُرَةَ القَدَمِ. لَعِبَ مَعَ أَصْدِقَائِهِ فِي السَّاحَةِ. سَجَّلَ هَدَفاً رَائِعاً.', questions: [
+                { q: 'مَاذَا يُحِبُّ فَيْصَلُ؟', options: ['السباحة', 'كُرَةَ القَدَمِ', 'الجري'], answer: 1 },
+                { q: 'أَيْنَ لَعِبَ فَيْصَلُ؟', options: ['في البيت', 'فِي السَّاحَةِ', 'في الغرفة'], answer: 1 },
+                { q: 'مَاذَا سَجَّلَ فَيْصَلُ؟', options: ['هَدَفاً', 'نقطة', 'خطأ'], answer: 0 }
+            ]},
+            { id: 's13', icon: '🎨', title: '13. أَلْوَانُ لَيْلَى', text: 'أَمْسَكَتْ لَيْلَى الأَلْوَانَ. رَسَمَتْ زَهْرَةً صَفْرَاءَ. فَرِحَتِ المُعَلِّمَةُ بِالرَّسْمَةِ.', questions: [
+                { q: 'مَاذَا أَمْسَكَتْ لَيْلَى؟', options: ['الأَلْوَانَ', 'الكتاب', 'المقص'], answer: 0 },
+                { q: 'مَاذَا رَسَمَتْ لَيْلَى؟', options: ['سيارة', 'زَهْرَةً صَفْرَاءَ', 'بيتاً'], answer: 1 },
+                { q: 'مَنْ فَرِحَ بِالرَّسْمَةِ؟', options: ['المُعَلِّمَةُ', 'الأم', 'الصديقة'], answer: 0 }
+            ]},
+            { id: 's14', icon: '🌧️', title: '14. المَطَرُ الخَفِيفُ', text: 'سَقَطَ المَطَرُ مِنَ السَّحَابَةِ. سَقَى الأَرْضَ وَالأَشْجَارَ. فَرِحَتِ الطُّيُورُ كَثِيراً.', questions: [
+                { q: 'مَاذَا سَقَطَ مِنَ السَّحَابَةِ؟', options: ['الثلج', 'المَطَرُ', 'الهواء'], answer: 1 },
+                { q: 'مَاذَا سَقَى المَطَرُ؟', options: ['الأَرْضَ وَالأَشْجَارَ', 'البيوت', 'السيارات'], answer: 0 },
+                { q: 'مَنْ فَرِحَ بالمَطَرِ؟', options: ['القطط', 'الطُّيُورُ', 'الأسماك'], answer: 1 }
+            ]},
+            { id: 's15', icon: '🌙', title: '15. هِلَالُ العِيدِ', text: 'نَظَرَ زَيْدٌ إِلَى السَّمَاءِ. رَأَى هِلَالَ العِيدِ يَلْمَعُ. قَالَ زَيْدٌ: عِيدٌ سَعِيدٌ!', questions: [
+                { q: 'إِلَى أَيْنَ نَظَرَ زَيْدٌ؟', options: ['إلى الأرض', 'إِلَى السَّمَاءِ', 'إلى البحر'], answer: 1 },
+                { q: 'مَاذَا رَأَى زَيْدٌ؟', options: ['الشمس', 'هِلَالَ العِيدِ', 'الغيمة'], answer: 1 },
+                { q: 'مَاذَا قَالَ زَيْدٌ؟', options: ['صباح الخير', 'عِيدٌ سَعِيدٌ!', 'مع السلامة'], answer: 1 }
+            ]},
+            { id: 's16', icon: '🌳', title: '16. الشَّجَرَةُ الكَبِيرَةُ', text: 'فِي الحَدِيقَةِ شَجَرَةٌ كَبِيرَةٌ. جَلَسَ الأَطْفَالُ تَحْتَ ظِلِّهَا. لَعِبُوا بِسَعَادَةٍ.', questions: [
+                { q: 'أَيْنَ تُوجَدُ الشَّجَرَةُ؟', options: ['فِي الحَدِيقَةِ', 'في الشارع', 'في البيت'], answer: 0 },
+                { q: 'أَيْنَ جَلَسَ الأَطْفَالُ؟', options: ['فوق الشجرة', 'تَحْتَ ظِلِّهَا', 'خارج الحديقة'], answer: 1 },
+                { q: 'كَيْفَ لَعِبَ الأَطْفَالُ؟', options: ['بِحُزْنٍ', 'بِسَعَادَةٍ', 'ببُكاء'], answer: 1 }
+            ]},
+            { id: 's17', icon: '⭐', title: '17. النَّجْمَةُ المُنِيرَةُ', text: 'فِي اللَّيْلِ، ظَهَرَتْ نَجْمَةٌ صَغِيرَةٌ. كَانَتْ تُضِيءُ السَّمَاءَ بِنُورِهَا الجَمِيلِ.', questions: [
+                { q: 'مَتَى ظَهَرَتِ النَّجْمَةُ؟', options: ['فِي اللَّيْلِ', 'في النهار', 'في الظهر'], answer: 0 },
+                { q: 'مَا حَجْمُ النَّجْمَةِ؟', options: ['كبيرة', 'صَغِيرَةٌ', 'ضخمة'], answer: 1 },
+                { q: 'مَاذَا تُضِيءُ النَّجْمَةُ؟', options: ['الغرفة', 'السَّمَاءَ', 'البيت'], answer: 1 }
+            ]},
+            { id: 's18', icon: '📖', title: '18. كِتَابُ رَامِي', text: 'فَتَحَ رَامِي الكِتَابَ الصَّغِيرَ. قَرَأَ قِصَّةً مُمْتِعَةً عَنِ الحَيَوَانَاتِ.', questions: [
+                { q: 'مَاذَا فَتَحَ رَامِي؟', options: ['الصندوق', 'الكِتَابَ', 'الباية'], answer: 1 },
+                { q: 'مَاذَا قَرَأَ رَامِي؟', options: ['قِصَّةً مُمْتِعَةً', 'نشيداً', 'أرقاماً'], answer: 0 },
+                { q: 'عَنْ مَاذَا كَانَتِ القِصَّةُ؟', options: ['عن السيارات', 'عَنِ الحَيَوَانَاتِ', 'عن الفضاء'], answer: 1 }
+            ]},
+            { id: 's19', icon: '🏰', title: '19. البُرْجُ الخَشَبِيُّ', text: 'بَنَى خَالِدٌ بُرْجاً مِنَ المَكَعَّبَاتِ الخَشَبِيَّةِ. وَضَعَ المَكَعَّبَ الأخْضَرَ فِي الأَعْلَى.', questions: [
+                { q: 'مَنْ بَنَى البُرْجَ؟', options: ['خَالِدٌ', 'طارق', 'سالم'], answer: 0 },
+                { q: 'مِمَّا بَنَى خَالِدٌ البُرْجَ؟', options: ['من الطين', 'مِنَ المَكَعَّبَاتِ', 'من الورق'], answer: 1 },
+                { q: 'أَيْنَ وَضَعَ المَكَعَّبَ الأَخْضَرَ؟', options: ['فِي الأَعْلَى', 'في الأسفل', 'في الوسط'], answer: 0 }
+            ]},
+            { id: 's20', icon: '🌙', title: '20. القَمَرُ المُنِيرُ', text: 'نَظَرَتْ سِهَامُ مِنَ النَّافِذَةِ. رَأَتِ القَمَرَ المُنِيرَ. ابْتَسَمَتْ وَقَالَتْ: مَا أَجْمَلَكَ!', questions: [
+                { q: 'مِنْ أَيْنَ نَظَرَتْ سِهَامُ؟', options: ['مِنَ النَّافِذَةِ', 'من الباب', 'من السطح'], answer: 0 },
+                { q: 'مَاذَا رَأَتْ سِهَامُ؟', options: ['الشمس', 'القَمَرَ المُنِيرَ', 'السحابة'], answer: 1 },
+                { q: 'مَاذَا فَعَلَتْ سِهَامُ؟', options: ['ابْتَسَمَتْ', 'بكت', 'نامت'], answer: 0 }
+            ]},
+            { id: 's21', icon: '⛵', title: '21. القَارِبُ الصَّغِيرُ', text: 'يَمْشِي القَارِبُ الصَّغِيرُ فِي المَاءِ. يَتَحَرَّكُ مَعَ الهَوَاءِ الخَفِيفِ بِسَلَامٍ.', questions: [
+                { q: 'أَيْنَ يَمْشِي القَارِبُ؟', options: ['على التراب', 'فِي المَاءِ', 'في الشارع'], answer: 1 },
+                { q: 'مَاذَا يُحَرِّكُ القَارِبَ؟', options: ['الهَوَاءِ الخَفِيفِ', 'المحرك', 'الرمال'], answer: 0 },
+                { q: 'مَا حَجْمُ القَارِبِ؟', options: ['كبير', 'صَغِيرٌ', 'ضخم'], answer: 1 }
+            ]},
+            { id: 's22', icon: '🎁', title: '22. هَدِيَّةُ طَارِقٍ', text: 'أَعْطَى حَازِمٌ صَدِيقَهُ طَارِقاً هَدِيَّةً صَغِيرَةً. فَرِحَ طَارِقٌ وَقَالَ: شُكْراً يَا صَدِيقِي!', questions: [
+                { q: 'مَنْ أَعْطَى الهَدِيَّةَ؟', options: ['حَازِمٌ', 'خالد', 'سيف'], answer: 0 },
+                { q: 'لِمَنْ أَعْطَى حَازِمٌ الهَدِيَّةَ؟', options: ['لأخيه', 'لِصَدِيقِهِ طَارِقٍ', 'لأبيه'], answer: 1 },
+                { q: 'مَاذَا قَالَ طَارِقٌ؟', options: ['لا أريدها', 'شُكْراً يَا صَدِيقِي!', 'أين الباقي؟'], answer: 1 }
+            ]},
+            { id: 's23', icon: '🍇', title: '23. العِنَبُ الحُلْوُ', text: 'جَلَسَتْ مَرْيَمُ فِي الحَدِيقَةِ. أَكَلَتْ حَبَّاتِ عِنَبٍ حُلْوَةٍ. قَالَتْ: الحَمْدُ لِلَّهِ.', questions: [
+                { q: 'أَيْنَ جَلَسَتْ مَرْيَمُ؟', options: ['فِي الحَدِيقَةِ', 'في الغرفة', 'في السيارة'], answer: 0 },
+                { q: 'مَاذَا أَكَلَتْ مَرْيَمُ؟', options: ['تفاحاً', 'عِنَباً حُلْواً', 'موزاً'], answer: 1 },
+                { q: 'مَاذَا قَالَتْ بَعْدَ الأَكْلِ؟', options: ['أريد المزيد', 'الحَمْدُ لِلَّهِ', 'تعبت'], answer: 1 }
+            ]},
+            { id: 's24', icon: '🌸', title: '24. الزَّهْرَةُ العَطِرَةُ', text: 'فِي الصَّبَاحِ، فَتَحَتِ الزَّهْرَةُ أَوْرَاقَهَا. كَانَتْ رَائِحَتُهَا طَيِّبَةً وَجَمِيلَةً.', questions: [
+                { q: 'مَتَى فَتَحَتِ الزَّهْرَةُ أَوْرَاقَهَا؟', options: ['فِي الصَّبَاحِ', 'في الليل', 'في الظهر'], answer: 0 },
+                { q: 'كَيْفَ كَانَتْ رَائِحَةُ الزَّهْرَةِ؟', options: ['سيئة', 'طَيِّبَةً وَجَمِيلَةً', 'بدون رائحة'], answer: 1 },
+                { q: 'مَاذَا فَتَحَتِ الزَّهْرَةُ؟', options: ['أَوْرَاقَهَا', 'جذورها', 'ثمارها'], answer: 0 }
+            ]},
+            { id: 's25', icon: '✏️', title: '25. القَلَمُ الأَزْرَقُ', text: 'أَخَذَ بَدْرٌ القَلَمَ الأزْرَقَ. رَسَمَ خَطّاً مُسْتَقِيماً فِي الكُرَّاسَةِ.', questions: [
+                { q: 'مَا لَوْنُ القَلَمِ؟', options: ['أحمر', 'أَزْرَقُ', 'أخضر'], answer: 1 },
+                { q: 'مَنْ أَخَذَ القَلَمَ؟', options: ['بَدْرٌ', 'أحمد', 'فيصل'], answer: 0 },
+                { q: 'مَاذَا رَسَمَ بَدْرٌ؟', options: ['دائرة', 'خَطّاً مُسْتَقِيماً', 'مربعاً'], answer: 1 }
+            ]},
+            { id: 's26', icon: '🦋', title: '26. الفَرَاشَةُ المُلَوَّنَةُ', text: 'طَارَتْ فَرَاشَةٌ جَمِيلَةٌ. لَوْنُهَا أَصْفَرُ وَأَزْرَقُ. وَقَفَتْ عَلَى الوَرْدَةِ.', questions: [
+                { q: 'مَاذَا طَارَتْ؟', options: ['نحلة', 'فَرَاشَةٌ جَمِيلَةٌ', 'عصفورة'], answer: 1 },
+                { q: 'مَا أَلْوَانُ الفَرَاشَةِ؟', options: ['أَصْفَرُ وَأَزْرَقُ', 'أحمر وأسود', 'أبيض ورصاصي'], answer: 0 },
+                { q: 'أَيْنَ وَقَفَتِ الفَرَاشَةُ؟', options: ['على الأرض', 'عَلَى الوَرْدَةِ', 'على الغصن'], answer: 1 }
+            ]},
+            { id: 's27', icon: '🍌', title: '27. المَوْزُ اللَّذِيذُ', text: 'اشْتَرَى الأَبُ مَوْزاً أَصْفَرَ. أَعْطَى سَارَةَ مَوْزَةً لَذِيذَةً. شَكَرَتْ سَارَةُ أَبَاهَا.', questions: [
+                { q: 'مَاذَا اشْتَرَى الأَبُ؟', options: ['مَوْزاً أَصْفَرَ', 'تفاحاً', 'عنباً'], answer: 0 },
+                { q: 'مَاذَا أَعْطَى لسَارَةَ؟', options: ['تفاحة', 'مَوْزَةً', 'حلوى'], answer: 1 },
+                { q: 'مَاذَا فَعَلَتْ سَارَةُ؟', options: ['شَكَرَتْ أَبَاهَا', 'بكت', 'نامت'], answer: 0 }
+            ]},
+            { id: 's28', icon: '🥛', title: '28. الحَلِيبُ الطَّازَجُ', text: 'شَرِبَ عُمَرُ كُوباً مِنَ الحَلِيبِ الدَّافِئِ قَبْلَ النَّوْمِ. أُصْبَحَ جِسْمُهُ قَوِيّاً.', questions: [
+                { q: 'مَاذَا شَرِبَ عُمَرُ؟', options: ['عصيراً', 'كُوباً مِنَ الحَلِيبِ', 'ماءً بارداً'], answer: 1 },
+                { q: 'مَتَى شَرِبَ الحَلِيبَ؟', options: ['قَبْلَ النَّوْمِ', 'في الصباح', 'في الغداء'], answer: 0 },
+                { q: 'كَيْفَ أَصْبَحَ جِسْمُ عُمَرَ؟', options: ['ضعيفاً', 'قَوِيّاً', 'تعباناً'], answer: 1 }
+            ]},
+            { id: 's29', icon: '🚗', title: '29. السَّيَّارَةُ الصَّغِيرَةُ', text: 'لَدَى عَالِي سَيَّارَةٌ صَغِيرَةٌ صَفْرَاءُ. تَمْشِي السَّيَّارَةُ بِسُرْعَةٍ عَلَى السَّجَّادَةِ.', questions: [
+                { q: 'مَاذَا لَدَى عَالِي؟', options: ['سَيَّارَةٌ صَغِيرَةٌ', 'كرة', 'طيارة'], answer: 0 },
+                { q: 'مَا لَوْنُ السَّيَّارَةِ؟', options: ['أحمر', 'صَفْرَاءُ', 'أزرق'], answer: 1 },
+                { q: 'أَيْنَ تَمْشِي السَّيَّارَةُ؟', options: ['على السَّجَّادَةِ', 'على الطاولة', 'في الشارع'], answer: 0 }
+            ]},
+            { id: 's30', icon: '🌟', title: '30. البَطَلُ القَارِئُ', text: 'أَكْمَلَ الطَّالِبُ القِرَاءَةَ بِتَفَوُّقٍ. نَالَ وَسَامَ أَمِيرِ البَيَانِ. مَبْرُوكٌ يَا بَطَلُ!', questions: [
+                { q: 'كَيْفَ أَكْمَلَ الطَّالِبُ القِرَاءَةَ؟', options: ['بصعوبة', 'بِتَفَوُّقٍ', 'ببطء'], answer: 1 },
+                { q: 'مَا الوَسَامُ الَّذِي نَالَهُ؟', options: ['وسام الرسام', 'وَسَامَ أَمِيرِ البَيَانِ', 'وسام الرياضي'], answer: 1 },
+                { q: 'مَاذَا نَقُولُ لِلْبَطَلِ؟', options: ['حاول مرة أخرى', 'مَبْرُوكٌ يَا بَطَلُ!', 'بالتوفيق'], answer: 1 }
+            ]}
+        ];
+
+        let currentStory = null;
+        let synth = window.speechSynthesis;
+        let utterance = null;
+
+        function init() {
+            const currentRole = localStorage.getItem('userRole');
+            
+            if (!currentRole) {
+                document.getElementById('roleModal').classList.remove('hidden');
+                document.getElementById('studentModal').classList.add('hidden');
+                document.getElementById('teacherLoginModal').classList.add('hidden');
+                document.getElementById('teacherDashboard').classList.add('hidden');
+            } else if (currentRole === 'teacher') {
+                document.getElementById('roleModal').classList.add('hidden');
+                document.getElementById('teacherDashboard').classList.remove('hidden');
+                document.querySelector('.rewards-section').classList.add('hidden');
+                document.getElementById('homeView').classList.add('hidden');
+                listenToTeacherData();
+            } else if (currentRole === 'student') {
+                document.getElementById('roleModal').classList.add('hidden');
+                checkStudentStatus();
+            }
+        }
+
+        function selectRole(role) {
+            if (role === 'student') {
+                document.getElementById('roleModal').classList.add('hidden');
+                document.getElementById('studentModal').classList.remove('hidden');
+            } else if (role === 'teacher') {
+                document.getElementById('roleModal').classList.add('hidden');
+                document.getElementById('teacherLoginModal').classList.remove('hidden');
+            }
+        }
+
+        function resetToRoleSelection() {
+            localStorage.removeItem('userRole');
+            location.reload();
+        }
+
+        function verifyTeacherPassword() {
+            const pass = document.getElementById('teacherPasswordInput').value;
+            if (pass === "1234") {
+                localStorage.setItem('userRole', 'teacher');
+                document.getElementById('teacherLoginModal').classList.add('hidden');
+                init();
+            } else {
+                alert("كلمة المرور غير صحيحة! (الصحيحة هي 1234)");
+            }
+        }
+
+        function submitStudentRegistration() {
+            const name = document.getElementById('studentNameInput').value.trim();
+            const sClass = document.getElementById('studentClassInput').value.trim();
+
+            if (!name || !sClass) {
+                alert("يرجى إدخال اسم الطالب والصَفِّ كاملاً!");
+                return;
+            }
+
+            const safeKey = name.replace(/[.#$\/\[\]]/g, "_") + "_" + sClass.replace(/[.#$\/\[\]]/g, "_");
+
+            localStorage.setItem('userRole', 'student');
+            localStorage.setItem('currentStudentName', name);
+            localStorage.setItem('currentStudentClass', sClass);
+            localStorage.setItem('currentStudentKey', safeKey);
+            localStorage.setItem('studentApproved', 'false');
+
+            db.ref('teacherPendingRequests/' + safeKey).set({
+                name: name,
+                className: sClass
+            }).then(() => {
+                location.reload();
+            }).catch(err => {
+                alert("حدث خطأ في الاتصال بالسحابة: " + err.message);
+            });
+        }
+
+        function checkStudentStatus() {
+            const name = localStorage.getItem('currentStudentName');
+            const sClass = localStorage.getItem('currentStudentClass');
+            const safeKey = localStorage.getItem('currentStudentKey');
+
+            if (!name || !safeKey) {
+                document.getElementById('studentModal').classList.remove('hidden');
+                return;
+            }
+
+            db.ref('allSchoolStudents/' + safeKey).once('value').then((snapshot) => {
+                if (snapshot.exists()) {
+                    localStorage.setItem('studentApproved', 'true');
+                    document.getElementById('studentModal').classList.add('hidden');
+                    document.getElementById('welcomeTag').innerText = `مَرْحَباً بِكَ يَا بَطَلُ: ${name} (${sClass})`;
+                    renderStories();
+                    updateRewards();
+                } else {
+                    document.getElementById('studentModal').classList.remove('hidden');
+                    document.getElementById('studentModalContent').innerHTML = `
+                        <h2>رِحْلَتُكَ بانتظَارِ المُعَلِّمِ ⏳</h2>
+                        <p style="color: #64748b; margin-top: 15px; font-size: 1.1rem; line-height: 1.8;">
+                            أهلاً بك يا <b>${name}</b> (${sClass}).<br>
+                            تم إرسال طلب انضمامك بنجاح. بمجرد موافقة المعلم ستفتح لك الحكايات تلقائياً!
+                        </p>
+                        <button class="btn btn-audio" style="margin: 20px auto 0 auto; justify-content:center;" onclick="location.reload()">تَحْدِيثُ الصَّفْحَةِ 🔄</button>
+                        <button class="btn btn-back" style="width:100%; justify-content:center; margin-top:10px;" onclick="resetToRoleSelection()">⬅️ رُجُوعٌ</button>
+                    `;
+                }
+            });
+        }
+
+        function renderStories() {
+            const container = document.getElementById('storiesContainer');
+            const safeKey = localStorage.getItem('currentStudentKey');
+            
+            db.ref('allSchoolStudents/' + safeKey).once('value').then((snapshot) => {
+                const studentData = snapshot.val() || {};
+                const progress = studentData.progress || {};
+
+                container.innerHTML = stories.map(story => {
+                    const isRead = progress[story.id] !== undefined;
+                    const score = isRead ? progress[story.id].score : 0;
+                    const total = story.questions.length;
+
+                    return `
+                        <div class="story-btn" onclick="openStory('${story.id}')">
+                            <span class="icon">${story.icon}</span>
+                            <h3>${story.title}</h3>
+                            <span class="status-badge ${isRead ? 'badge-read' : 'badge-unread'}">
+                                ${isRead ? `تم الإنجاز (${score}/${total})` : 'لَمْ تُقْرَأْ بَعْدُ'}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function updateRewards() {
+            const safeKey = localStorage.getItem('currentStudentKey');
+            db.ref('allSchoolStudents/' + safeKey).once('value').then((snapshot) => {
+                const studentData = snapshot.val() || {};
+                const progress = studentData.progress || {};
+                
+                const readCount = Object.keys(progress).length;
+                const totalStories = stories.length;
+                const percentage = (readCount / totalStories) * 100;
+
+                document.getElementById('progressText').innerText = `أَكْمَلْتَ ${readCount} مِنْ ${totalStories} قِصَّةً بِبَرَاعَةٍ`;
+                document.getElementById('progressBar').style.width = `${percentage}%`;
+
+                if (readCount >= 10) document.getElementById('badge1').classList.add('unlocked');
+                if (readCount >= 20) document.getElementById('badge2').classList.add('unlocked');
+                if (readCount >= 30) document.getElementById('badge3').classList.add('unlocked');
+            });
+        }
+
+        function openStory(storyId) {
+            currentStory = stories.find(s => s.id === storyId);
+            document.getElementById('storyTitle').innerText = currentStory.title;
+            document.getElementById('storyText').innerText = currentStory.text;
+
+            const qContainer = document.getElementById('questionsContainer');
+            qContainer.innerHTML = currentStory.questions.map((q, index) => `
+                <div class="question-box">
+                    <div class="question-title">${index + 1}. ${q.q}</div>
+                    <div class="options">
+                        ${q.options.map((opt, optIdx) => `
+                            <label class="option-label">
+                                <input type="radio" name="q_${index}" value="${optIdx}" required>
+                                ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('storyView').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function showHome() {
+            stopAudio();
+            document.getElementById('storyView').classList.add('hidden');
+            document.getElementById('resultView').classList.add('hidden');
+            document.getElementById('homeView').classList.remove('hidden');
+            renderStories();
+            updateRewards();
+        }
+
+        function toggleAudio() {
+            if (synth.speaking) {
+                stopAudio();
+                return;
+            }
+
+            utterance = new SpeechSynthesisUtterance(currentStory.text);
+            utterance.lang = 'ar-SA';
+            utterance.rate = 0.82;
+
+            utterance.onend = () => {
+                document.getElementById('audioBtnText').innerText = 'اسْتَمِعْ لِلسَّرْدِ الصَّوْتِيِّ';
+            };
+
+            synth.speak(utterance);
+            document.getElementById('audioBtnText').innerText = 'إِيقَافُ الصَّوْتِ ⏹️';
+        }
+
+        function stopAudio() {
+            if (synth.speaking) {
+                synth.cancel();
+                document.getElementById('audioBtnText').innerText = 'اسْتَمِعْ لِلسَّرْدِ الصَّوْتِيِّ';
+            }
+        }
+
+        function submitQuiz() {
+            const form = document.getElementById('quizForm');
+            const formData = new FormData(form);
+            let score = 0;
+
+            for (let i = 0; i < currentStory.questions.length; i++) {
+                if (!formData.has(`q_${i}`)) {
+                    alert('عَفْواً يَا بَطَلُ، يَجِبُ الإِجَابَةُ عَنْ جَمِيعِ الأَسْئِلَةِ الثَّلَاثَةِ!');
+                    return;
+                }
+            }
+
+            currentStory.questions.forEach((q, index) => {
+                const selected = parseInt(formData.get(`q_${index}`));
+                if (selected === q.answer) score++;
+            });
+
+            const safeKey = localStorage.getItem('currentStudentKey');
+            const name = localStorage.getItem('currentStudentName');
+            const sClass = localStorage.getItem('currentStudentClass');
+
+            if (safeKey) {
+                db.ref('allSchoolStudents/' + safeKey).update({
+                    name: name,
+                    className: sClass
+                });
+
+                db.ref(`allSchoolStudents/${safeKey}/progress/${currentStory.id}`).set({
+                    title: currentStory.title,
+                    score: score,
+                    total: currentStory.questions.length
+                });
+            }
+
+            stopAudio();
+            document.getElementById('storyView').classList.add('hidden');
+            const resultView = document.getElementById('resultView');
+            resultView.classList.remove('hidden');
+
+            const resultEmoji = document.getElementById('resultEmoji');
+            const resultTitle = document.getElementById('resultTitle');
+            const resultText = document.getElementById('resultText');
+
+            if (score === currentStory.questions.length) {
+                resultEmoji.innerText = '🌟🏆';
+                resultTitle.innerText = 'عَبْقَرِيٌّ وَمُتَفَوِّقٌ حَقّاً!';
+                resultText.innerText = `لَقَدْ أَجَبْتَ عَنْ جَمِيعِ الأَسْئِلَةِ بِذَكَاءٍ بَالِغٍ: ${score} مِنْ ${currentStory.questions.length}`;
+            } else {
+                resultEmoji.innerText = '👍✨';
+                resultTitle.innerText = 'مُحَاوَلَةٌ أَدَبِيَّةٌ طَيِّبَةٌ!';
+                resultText.innerText = `نَتِيجَتُكَ المُشَرِّفَةُ هِيَ: ${score} مِنْ ${currentStory.questions.length}. يَسْطَعُ نَجْمُكَ عِنْدَمَا تُعِيدُ القِرَاءَةَ بِتَمَعُّنٍ!`;
+            }
+        }
+
+        function listenToTeacherData() {
+            const tbody = document.getElementById('reportTableBody');
+
+            db.ref().on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const pendingRequests = data.teacherPendingRequests || {};
+                const allStudents = data.allSchoolStudents || {};
+                
+                const pendingKeys = Object.keys(pendingRequests);
+                const keys = Object.keys(allStudents);
+
+                let htmlContent = "";
+
+                if (pendingKeys.length > 0) {
+                    htmlContent += `
+                        <tr style="background: #fef3c7;">
+                            <td colspan="4" style="text-align: right; font-weight: 700; color: #b45309; padding: 12px;">
+                                🔔 طَلَبَاتُ انْضِمَامِ طُّلَّابٍ جُدُدٍ بَانْتِظَارِ المُوَافَقَةِ:
+                            </td>
+                        </tr>
+                    `;
+                    pendingKeys.forEach((pKey) => {
+                        const pStudent = pendingRequests[pKey];
+                        htmlContent += `
+                            <tr style="background: #fffbeb;">
+                                <td><strong>${pStudent.name}</strong></td>
+                                <td>${pStudent.className}</td>
+                                <td style="color: #d97706; font-weight: 700;">بانتظار القبول ⏳</td>
+                                <td><button class="btn btn-audio" style="padding: 6px 14px; font-size: 0.9rem; margin: 0 auto; background: #059669;" onclick="approveStudent('${pKey}')">موافقة وقبول ✅</button></td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                if (keys.length === 0 && pendingKeys.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">لَمْ يُسَجِّلْ أَيُّ طَالِبٍ دُخُولَهُ حَتَّى الآنَ</td></tr>';
+                    return;
+                }
+
+                htmlContent += `
+                    <tr style="background: #e2e8f0;">
+                        <td colspan="4" style="text-align: right; font-weight: 700; color: #334155; padding: 10px;">
+                            📋 سِجِلُّ الطُّلَّابِ المَقْبُولِينَ وَالمُتَابَعَةِ:
+                        </td>
+                    </tr>
+                `;
+
+                keys.forEach((key) => {
+                    const s = allStudents[key];
+                    const readCount = s.progress ? Object.keys(s.progress).length : 0;
+                    
+                    htmlContent += `
+                        <tr>
+                            <td><strong>${s.name}</strong></td>
+                            <td>${s.className}</td>
+                            <td><span style="color: #059669; font-weight: 700;">${readCount} / 30 قصة</span></td>
+                            <td><button class="btn btn-audio" style="padding: 6px 12px; font-size: 0.9rem; margin: 0 auto;" onclick="viewStudentDetails('${key}')">عَرْضُ حَالَةِ القِرَاءَةِ 📋</button></td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = htmlContent;
+            });
+        }
+
+        function approveStudent(pKey) {
+            db.ref('teacherPendingRequests/' + pKey).once('value').then((snapshot) => {
+                const sData = snapshot.val();
+                if (sData) {
+                    db.ref('allSchoolStudents/' + pKey).set({
+                        name: sData.name,
+                        className: sData.className,
+                        progress: {}
+                    }).then(() => {
+                        db.ref('teacherPendingRequests/' + pKey).remove();
+                        alert(`تمت الموافقة على انضمام الطالب: ${sData.name} بنجاح!`);
+                    });
+                }
+            });
+        }
+
+        function viewStudentDetails(studentKey) {
+            db.ref('allSchoolStudents/' + studentKey).once('value').then((snapshot) => {
+                const student = snapshot.val();
+                if (!student) return;
+
+                document.getElementById('detailStudentTitle').innerText = `تَفَاصِيل قِرَاءَةِ الحِكَايَاتِ لِلطَّالِب: ${student.name} (${student.className})`;
+                
+                const tbody = document.getElementById('detailTableBody');
+                const studentProgress = student.progress || {};
+
+                tbody.innerHTML = stories.map(story => {
+                    const isRead = studentProgress[story.id] !== undefined;
+                    const score = isRead ? studentProgress[story.id].score : '-';
+                    const total = story.questions.length;
+
+                    return `
+                        <tr>
+                            <td style="text-align: right;"><strong>${story.title}</strong></td>
+                            <td>
+                                ${isRead ? '<span style="color: #059669; font-weight: 700; background: #d1fae5; padding: 4px 10px; border-radius: 8px;">قَرَأَهَا ✅</span>' : '<span style="color: #b45309; font-weight: 700; background: #fef3c7; padding: 4px 10px; border-radius: 8px;">لَمْ يَقْرَأْهَا ❌</span>'}
+                            </td>
+                            <td><strong>${isRead ? score + ' / ' + total : '—'}</strong></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                document.getElementById('studentDetailView').classList.remove('hidden');
+            });
+        }
+
+        function backToAllStudents() {
+            document.getElementById('studentDetailView').classList.add('hidden');
+        }
+
+        init();
+    </script>
+</body>
+</html>
